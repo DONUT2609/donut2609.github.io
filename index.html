@@ -507,7 +507,7 @@
     }
 
     function loadScheduleFromCsv() {
-      fetch("https://docs.google.com/spreadsheets/d/1OqfwY8Vv_O5QSw-EKu6wgGeDaYRF94uF/export?format=csv&gid=0")
+      fetch("https://docs.google.com/spreadsheets/d/1OV3X3bDr4DbTrUxBDrWYg63Qg1rfd6qY5C1fZ-7vKWQ/export?format=csv&gid=0")
         .then(function(resp) {
           if (!resp.ok) throw new Error('CSV not found (' + resp.status + ')');
           var lastMod = resp.headers.get('Last-Modified');
