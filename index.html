@@ -442,6 +442,7 @@
     const leftControls = document.getElementById('leftControls');
     const rightControls = document.getElementById('rightControls');
     let csvModifiedText = '';
+    let csvLoadedTime = '';
 
     let lastHash = null;
 
@@ -506,18 +507,23 @@
       return details.map(d => d.replace(/\s+/g, ' ').trim()).join(' | ');
     }
 
+    function extractCellJ1(text) {
+      const firstLine = text.split(/\r\n|\n|\r/)[0] || '';
+      const cols = parseCsvLine(firstLine);
+      return (cols[9] || '').trim();
+    }
+
     function loadScheduleFromCsv() {
       fetch("https://docs.google.com/spreadsheets/d/1OV3X3bDr4DbTrUxBDrWYg63Qg1rfd6qY5C1fZ-7vKWQ/export?format=csv&gid=0")
         .then(function(resp) {
           if (!resp.ok) throw new Error('CSV not found (' + resp.status + ')');
-          var lastMod = resp.headers.get('Last-Modified');
-          csvModifiedText = lastMod ? new Date(lastMod).toLocaleString() : new Date().toLocaleString();
           return resp.text();
         })
         .then(function(text) {
+          csvLoadedTime = extractCellJ1(text) || new Date().toLocaleString();
           const voyages = parseCsvToVoyages(text);
           renderAllGrouped(voyages);
-          bottomTimestamp1.textContent = bottomTimestamp2.textContent = 'Loaded: ' + csvModifiedText;
+          bottomTimestamp1.textContent = bottomTimestamp2.textContent = 'Loaded: ' + csvLoadedTime;
         })
         .catch(function(err) {
           bottomTimestamp1.textContent = bottomTimestamp2.textContent = 'Error: ' + err.message;
@@ -649,8 +655,7 @@
       renderRows('fleetTable1', leftRows);
       renderRows('fleetTable2', rightRows);
 
-      const now = new Date().toLocaleString();
-      bottomTimestamp1.textContent = bottomTimestamp2.textContent = `Updated: ${now}`;
+      bottomTimestamp1.textContent = bottomTimestamp2.textContent = `Loaded: ${csvLoadedTime || new Date().toLocaleString()}`;
       requestAnimationFrame(function() {
         setVesselColumnWidthCapAndApply();
         syncControlsHeight(); adjustRowHeight();
