@@ -250,15 +250,25 @@
 
     /* blue */
     .status-fixed {
-      color: #d73a49
+      color: #07ab2b
     }
 
-    /* red */
+    /* green */
     .status-working {
       color: #f39c12
     }
 
     /* orange */
+
+    .status-canceled {
+      color: #ffffff;
+      background: #d73a49;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.02em
+    }
+
+    /* red badge - nổi bật */
 
     .bottomTimestamp {
       margin-top: 6px;
@@ -572,6 +582,7 @@
     function extractShortStatus(full) {
       if (!full) return '';
       const u = full.toUpperCase();
+      if (u.includes('CANCELED') || u.includes('CANCELLED')) return 'CANCELED';
       if (u.includes('PERFORMING')) return 'PERFORMING';
       if (u.includes('FIXED')) return 'FIXED';
       if (u.includes('WORKING')) return 'WORKING';
@@ -676,7 +687,8 @@
           if (shortStatus === 'PERFORMING') statusHtml = `<span class="status-word status-performing">${shortStatus}</span>`;
           else if (shortStatus === 'FIXED') statusHtml = `<span class="status-word status-fixed">${shortStatus}</span>`;
           else if (shortStatus === 'WORKING') statusHtml = `<span class="status-word status-working">${shortStatus}</span>`;
-          else statusHtml = ''; // show nothing if none of the three
+          else if (shortStatus === 'CANCELED') statusHtml = `<span class="status-word status-canceled">${shortStatus}</span>`;
+          else statusHtml = ''; // show nothing if none of the four
 
           tr.innerHTML = `
         <td title="${r.vesselCell}"><span class="vessel-name">${escapeHtml(r.vesselCell)}</span></td>
